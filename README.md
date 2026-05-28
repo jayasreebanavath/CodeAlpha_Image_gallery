@@ -25,7 +25,7 @@ A sleek, dark-themed image gallery built with pure HTML, CSS, and JavaScript —
 ## Getting Started
 
 1. Clone the repository:
-   git clone https://github.com/jayasreebanavath/image-gallery.git
+   git clone https://[github.com/jayasreebanavath/image-gallery.git](https://github.com/jayasreebanavath/CodeAlpha_Image_gallery/blob/main/image_gallery.html)
 
 2. Add your images to the project folder named as:
    image1.jpg, image2.jpg ... (Nature)
