@@ -1,0 +1,483 @@
+##Here is the code of HTML, CSS, Java for the image gallery
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CodeAlpha Image Gallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --accent: #e8c97e;
+      --accent2: #c97e8f;
+      --text: #f0ece4;
+      --muted: #7a7672;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 48px 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+    header::after {
+      content: '';
+      display: block;
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      margin-top: 16px;
+      border-radius: 2px;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      letter-spacing: -0.5px;
+      background: linear-gradient(120deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── FILTERS ── */
+    .filters {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 24px 20px;
+    }
+    .filter-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 8px 22px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .filter-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .filter-btn.active {
+      background: linear-gradient(120deg, var(--accent), var(--accent2));
+      border-color: transparent;
+      color: #0d0d0d;
+    }
+
+    /* ── GALLERY GRID ── */
+    .gallery {
+      columns: 4 280px;
+      column-gap: 14px;
+      padding: 10px 36px 60px;
+    }
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 14px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .gallery-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.45s ease, filter 0.3s ease;
+      filter: brightness(0.92) saturate(1.05);
+    }
+    .gallery-item:hover img {
+      transform: scale(1.04);
+      filter: brightness(1) saturate(1.15);
+    }
+    .gallery-item .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+    }
+    .gallery-item:hover .overlay { opacity: 1; }
+    .overlay-text { font-size: 0.82rem; color: #fff; letter-spacing: 0.04em; font-weight: 500; }
+    .overlay-tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* ── HIDDEN ITEM ── */
+    .gallery-item.hidden {
+      display: none;
+    }
+
+    /* ── LIGHTBOX ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8,8,8,0.95);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      backdrop-filter: blur(8px);
+    }
+    .lightbox.active { display: flex; }
+
+    .lb-inner {
+      position: relative;
+      max-width: 90vw;
+      max-height: 80vh;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .lb-inner img {
+      max-width: 78vw;
+      max-height: 78vh;
+      border-radius: var(--radius);
+      object-fit: contain;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+      animation: lbIn 0.3s ease;
+    }
+    @keyframes lbIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .lb-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+      flex-shrink: 0;
+    }
+    .lb-btn:hover { background: rgba(232,201,126,0.2); transform: scale(1.1); }
+
+    .lb-close {
+      position: fixed;
+      top: 22px; right: 28px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      z-index: 1001;
+    }
+    .lb-close:hover { background: rgba(201,126,143,0.3); }
+
+    .lb-caption {
+      margin-top: 16px;
+      text-align: center;
+    }
+    .lb-caption .lb-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text); }
+    .lb-caption .lb-cat {
+      font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-top: 4px;
+    }
+    .lb-counter {
+      position: fixed;
+      bottom: 22px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-msg {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .gallery { columns: 2 150px; padding: 10px 14px 40px; }
+      header { padding: 32px 20px 16px; }
+    }
+    @media (max-width: 420px) {
+      .gallery { columns: 1; }
+      .lb-inner img { max-width: 92vw; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Travel Image Gallery</h1>
+  <p>A curated collection of stunning imagery</p>
+</header>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="nature">Nature</button>
+  <button class="filter-btn" data-filter="city">City</button>
+  <button class="filter-btn" data-filter="architecture">Architecture</button>
+</div>
+
+<div class="gallery" id="gallery">
+
+  <!-- NATURE -->
+
+  
+  <div class="gallery-item" data-category="nature" data-title="Forest Mist">
+    <img src="image1.jpg" alt="Forest Mist" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Nature</span>Forest Mist</div></div>
+  </div>
+  <div class="gallery-item" data-category="nature" data-title="Mountain Lake">
+    <img src="image2.jpg" alt="Mountain Lake" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Nature</span>Mountain Lake</div></div>
+  </div>
+  <div class="gallery-item" data-category="nature" data-title="Wildflower Field">
+    <img src="image3.jpg" alt="Wildflower Field" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Nature</span>Wildflower Field</div></div>
+  </div>
+  <div class="gallery-item" data-category="nature" data-title="Autumn Path">
+    <img src="image4.jpg" alt="Autumn Path" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Nature</span>Autumn Path</div></div>
+  </div>
+  <div class="gallery-item" data-category="nature" data-title="Waterfall">
+    <img src="image5.jpg" alt="Waterfall" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Nature</span>Waterfall</div></div>
+  </div>
+  <div class="gallery-item" data-category="nature" data-title="Forest Meadow">
+    <img src="image6.jpg" alt="Forest Meadow" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Nature</span>Forest Meadow</div></div>
+  </div>
+  <div class="gallery-item" data-category="nature" data-title="Twilight Sky">
+    <img src="image7.jpg" alt="Twilight Sky" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Nature</span>Twilight Sky</div></div>
+  </div>
+  <div class="gallery-item" data-category="nature" data-title="Woodland Stream">
+    <img src="image8.jpg" alt="" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Nature</span>Woodland Stream</div></div>
+  </div>
+
+
+  <!-- CITY -->
+
+  <div class="gallery-item" data-category="city" data-title="Night Skyline">
+    <img src="image11.jpg" alt="Night Skyline" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">City</span>Night Skyline</div></div>
+  </div>
+  <div class="gallery-item" data-category="city" data-title="Neon Harbor Skyline">
+    <img src="image12.jpg" alt="Neon Harbor Skyline" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">City</span>Neon Harbor Skyline</div></div>
+  </div>
+  <div class="gallery-item" data-category="city" data-title="Electric city Waterfront ">
+    <img src="image13.jpg" alt="Electric city Waterfront " loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">City</span>Electric city Waterfront </div></div>
+  </div>
+  <div class="gallery-item" data-category="city" data-title="Urban Altitude">
+    <img src="image14.jpg" alt="Urban Altitude" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">City</span>Urban Altitude</div></div>
+  </div>
+  <div class="gallery-item" data-category="city" data-title="Metropolitan Horizon">
+    <img src="image15.jpg" alt="Metropolitan Horizon" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">City</span>Metropolitan Horizon</div></div>
+  </div>
+  <div class="gallery-item" data-category="city" data-title="Rain-Slicked Alley">
+    <img src="image16.jpg" alt="Rain-Slicked Alley" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">City</span>Rain-Slicked Alley</div></div>
+  </div>
+  <div class="gallery-item" data-category="city" data-title="Skyline Reflections">
+    <img src="image17.jpg" alt="Skyline Reflections" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">City</span>Skyline Reflections</div></div>
+  </div>
+  <div class="gallery-item" data-category="city" data-title="Wet Asphalt Reflection">
+    <img src="image18.jpg" alt="Wet Asphalt Reflection" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">City</span></div></div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+
+
+  <div class="gallery-item" data-category="architecture" data-title="Modern Facade">
+    <img src="image21.jpg" alt="Modern Facade" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Architecture</span>Modern Facade</div></div>
+  </div>
+  <div class="gallery-item" data-category="architecture" data-title="Brutalist Concrete">
+    <img src="image22.jpg" alt="Brutalist Concrete" loading=" lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag"> Architecture</span>Brutalist Concrete</div></div>
+  </div>
+  <div class="gallery-item" data-category="architecture" data-title="Glass Tower">
+    <img src="image23.jpg" alt="Glass Tower" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Architecture</span>Glass Tower</div></div>
+  </div>
+  <div class="gallery-item" data-category="architecture" data-title="Historic Archway">
+    <img src="image24.jpg" alt="Historic Archway" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Architecture</span>Historic Archway</div></div>
+  </div>
+  <div class="gallery-item" data-category="architecture" data-title="Futuristic Design">
+    <img src="image25.jpg" alt="Futuristic Design" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Architecture</span>Futuristic Design</div></div>
+  </div>
+  <div class="gallery-item" data-category="architecture" data-title="Symmetrical Structure">
+    <img src="image26.jpg" alt="Symmetrical Structure" loading="lazy"/>
+    <div class="overlay"><div class="overlay-text"><span class="overlay-tag">Architecture</span>Symmetrical Structure</div></div>
+  </div>
+<p class="empty-msg" id="emptyMsg">No images found in this category.</p>
+
+<!-- LIGHTBOX -->
+
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">&#x2715;</button>
+  <div class="lb-inner">
+    <button class="lb-btn" id="lbPrev">&#10094;</button>
+    <img src="" id="lbImg" alt="Lightbox Image"/>
+    <button class="lb-btn" id="lbNext">&#10095;</button>
+  </div>
+  <div class="lb-caption">
+    <div class="lb-title" id="lbTitle"></div>
+    <div class="lb-cat" id="lbCat"></div>
+  </div>
+  <div class="lb-counter" id="lbCounter"></div>
+</div>
+
+<script>
+  // ── STATE ──
+  let visibleItems = [];
+  let currentIndex = 0;
+
+  const gallery    = document.getElementById('gallery');
+  const lightbox   = document.getElementById('lightbox');
+  const lbImg      = document.getElementById('lbImg');
+  const lbTitle    = document.getElementById('lbTitle');
+  const lbCat      = document.getElementById('lbCat');
+  const lbCounter  = document.getElementById('lbCounter');
+  const emptyMsg   = document.getElementById('emptyMsg');
+
+  // ── FILTERS ──
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const allItems = document.querySelectorAll('.gallery-item');
+      allItems.forEach(item => {
+        const match = filter === 'all' || item.dataset.category === filter;
+        item.classList.toggle('hidden', !match);
+      });
+
+      visibleItems = [...document.querySelectorAll('.gallery-item:not(.hidden)')];
+      emptyMsg.style.display = visibleItems.length === 0 ? 'block' : 'none';
+    });
+  });
+
+  // ── OPEN LIGHTBOX ──
+  function openLightbox(index) {
+    currentIndex = index;
+    updateLightbox();
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function updateLightbox() {
+    const item = visibleItems[currentIndex];
+    lbImg.style.opacity = 0;
+    setTimeout(() => {
+      lbImg.src = item.querySelector('img').src;
+      lbTitle.textContent = item.dataset.title || '';
+      lbCat.textContent = item.dataset.category || '';
+      lbCounter.textContent = `${currentIndex + 1} / ${visibleItems.length}`;
+      lbImg.style.opacity = 1;
+      lbImg.style.transition = 'opacity 0.25s ease';
+    }, 120);
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // ── CLICK ITEMS ──
+  gallery.addEventListener('click', e => {
+    const item = e.target.closest('.gallery-item');
+    if (!item) return;
+    visibleItems = [...document.querySelectorAll('.gallery-item:not(.hidden)')];
+    const index = visibleItems.indexOf(item);
+    if (index !== -1) openLightbox(index);
+  });
+
+  // ── NAV BUTTONS ──
+  document.getElementById('lbNext').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % visibleItems.length;
+    updateLightbox();
+  });
+  document.getElementById('lbPrev').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + visibleItems.length) % visibleItems.length;
+    updateLightbox();
+  });
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+
+  // ── KEYBOARD SUPPORT ──
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'ArrowRight') { currentIndex = (currentIndex + 1) % visibleItems.length; updateLightbox(); }
+    if (e.key === 'ArrowLeft')  { currentIndex = (currentIndex - 1 + visibleItems.length) % visibleItems.length; updateLightbox(); }
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // ── CLICK OUTSIDE TO CLOSE ──
+  lightbox.addEventListener('click', e => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  // ── INIT visible items ──
+  visibleItems = [...document.querySelectorAll('.gallery-item')];
+</script>
+
+</body>
+</html>
