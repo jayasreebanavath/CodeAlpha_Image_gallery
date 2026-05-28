@@ -2,7 +2,7 @@
 A responsive dark-themed image gallery built with HTML, CSS and JavaScript. Features category filtering, masonry grid layout, hover overlays and a fullscreen lightbox with keyboard navigation. Built as part of the CodeAlpha internship.
 
 **Image Gallery**
-
+ 
 A sleek, dark-themed image gallery built with pure HTML, CSS, and JavaScript — no frameworks or dependencies required.
 
 ## Features
