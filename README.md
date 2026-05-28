@@ -1,20 +1,19 @@
-# CodeAlpha_Image_gallery
+# CodeAlpha(Image-gallery)
 A responsive dark-themed image gallery built with HTML, CSS and JavaScript. Features category filtering, masonry grid layout, hover overlays and a fullscreen lightbox with keyboard navigation. Built as part of the CodeAlpha internship.
 
-
-# CodeAlpha Image Gallery
+**Image Gallery**
 
 A sleek, dark-themed image gallery built with pure HTML, CSS, and JavaScript — no frameworks or dependencies required.
 
 ## Features
 
-- **Category Filtering** — Filter images by Nature, City, or Architecture
-- **Masonry Grid Layout** — Responsive multi-column layout using CSS columns
-- **Hover Overlays** — Smooth overlay with image title and category tag on hover
-- **Lightbox Viewer** — Full-screen image preview with previous/next navigation
-- **Keyboard Navigation** — Arrow keys to navigate, Escape to close the lightbox
-- **Lazy Loading** — Images load only when needed for better performance
-- **Fully Responsive** — Adapts gracefully to all screen sizes
+**Category Filtering**     — Filter images by Nature, City, or Architecture
+**Masonry Grid Layout**    — Responsive multi-column layout using CSS columns
+**Hover Overlays**         — Smooth overlay with image title and category tag on hover
+**Lightbox Viewer**        — Full-screen image preview with previous/next navigation
+**Keyboard Navigation**    — Arrow keys to navigate, Escape to close the lightbox
+**Lazy Loading**           — Images load only when needed for better performance
+**Fully Responsive**       — Adapts gracefully to all screen sizes
 
 ## Tech Stack
 
@@ -26,7 +25,7 @@ A sleek, dark-themed image gallery built with pure HTML, CSS, and JavaScript —
 ## Getting Started
 
 1. Clone the repository:
-   git clone https://github.com/your-username/image-gallery.git
+   git clone https://github.com/jayasreebanavath/image-gallery.git
 
 2. Add your images to the project folder named as:
    image1.jpg, image2.jpg ... (Nature)
